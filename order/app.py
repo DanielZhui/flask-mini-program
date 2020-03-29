@@ -1,3 +1,4 @@
+import time
 from flask import Flask, url_for
 from index import route
 
