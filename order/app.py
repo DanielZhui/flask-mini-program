@@ -13,8 +13,4 @@ class Application(Flask):
 db = SQLAlchemy()
 app = Application(__name__)
 app.register_blueprint(route_index, url_prefix='/')
-
-
-if __name__ == "__main__":
-    # app.run(host='127.0.0.1', port=app.config['SERVER_PORT'])
-    app.run(host='127.0.0.1', port=6666)
+manager = Manager(app)
