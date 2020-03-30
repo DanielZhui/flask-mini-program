@@ -8,6 +8,8 @@ verify_ssl = true
 [packages]
 flask = {index = "https://pypi.douban.com/simple",version = "*"}
 flask-sqlalchemy = {index = "https://pypi.douban.com/simple",version = "*"}
+flask-mysqldb = {index = "https://pypi.douban.com/simple",version = "*"}
+pymysql = {index = "https://pipy.douban.com/simple",version = "*"}
 
 [requires]
 python_version = "3.7"
