@@ -1,50 +1,20 @@
-from flask import Flask, url_for
+from flask import Flask
+from flask_script import Manager
 from flask_sqlalchemy import SQLAlchemy
-from index import route
-import pymysql
+from web.controllers.index import route_index
 
-from logs import setup_log
+# flask 源码解析, 类集成 以及配置文件的加载
+class Application(Flask):
+    def __init__(self, import_name):
+        super(Application, self).__init__(import_name)
+        self.config.from_pyfile('config/base_setting.py')
+        db.init_app(self)
 
-app = Flask(__name__)
-app.register_blueprint(route, url_prefix='/api')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:macadmin@localhost:3306/test'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
-SQLALCHEMY_ECHO = True
-db = SQLAlchemy(app)
-
-@app.route('/')
-def index():
-    url = url_for('index')
-    print(url)
-    return 'hello world', url
-
-@app.route('/home')
-def home():
-    url = url_for('home')
-    print(url)
-    return 'welcome to home'
-
-@app.route('/create')
-def create():
-    # models
-    class Person(db.Model):
-        __tablename__ = 'persons'
-        __table_args__ = {'extend_existing': True}
-        id = db.Column(db.Integer, primary_key=True)
-        name = db.Column(db.String(16))
-
-    class Tag(db.Model):
-        __tablename__ = "tag"
-        __table_args__ = {'extend_existing': True}
-        id = db.Column(db.Integer, primary_key=True)
-        name = db.Column(db.String(100), unique=True)
-
-    db.create_all()
-    # db.drop_all()
-    return 'success...'
+db = SQLAlchemy()
+app = Application(__name__)
+app.register_blueprint(route_index, url_prefix='/')
 
 
 if __name__ == "__main__":
-    log_level = 'DEBUG'
-    setup_log(log_level)
-    app.run(debug=True)
+    # app.run(host='127.0.0.1', port=app.config['SERVER_PORT'])
+    app.run(host='127.0.0.1', port=6666)
