@@ -6,13 +6,8 @@ route_user = Blueprint('user_page', __name__)
 def login():
     if request.method == 'GET':
         return render_template('user/login.html')
-<<<<<<< HEAD
     resp = {'code': 200, 'msg': '登录成功', 'data': {}}
     req = request.values
     login_name = req['login_name'] if 'login_name' in req else ''
     login_pwd = req['login_pwd'] if 'login_pwd' in req else ''
     return jsonify(resp)
-=======
-    return 'login post...'
-    
->>>>>>> dd29a32eed42a6bca9fa8a5520afe9c2bb5441bb
