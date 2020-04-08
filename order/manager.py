@@ -1,11 +1,14 @@
 import os
-from application import app, manager
-from flask_migrate import migrate, MigrateCommand
+from flask_migrate import Migrate, MigrateCommand
 from flask_script import Server
+
 import www
+from application import app, db, manager
+from common.models import User
 
 
-## web server
+## manager cmd
+Migrate(app, db)
 manager.add_command('runserver', Server(host='127.0.0.1', port=app.config['SERVER_PORT']), use_debug=True)
 manager.add_command('db', MigrateCommand)
 
