@@ -1,5 +1,7 @@
 from flask import Blueprint, request, render_template, redirect, jsonify
 
+from common.models.User import User
+
 route_user = Blueprint('user_page', __name__)
 
 @route_user.route('/login', methods=['GET', 'POST'])
@@ -23,5 +25,7 @@ def login():
         resp['code'] = -1
         resp['msg'] = '请输入正确的用户名或密码'
         return jsonify(resp)
+
+    user_info = User.query.filter_by(login_name=login_name).first()
 
     return jsonify(resp)
