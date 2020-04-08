@@ -2,11 +2,16 @@ import os
 from flask import Flask
 from flask_script import Manager
 from flask_sqlalchemy import SQLAlchemy
+import pymysql
 
 class Application(Flask):
     def __init__(self, import_name, template_folder=None, root_path=None):
         super(Application, self).__init__(import_name, template_folder=template_folder, root_path=root_path, static_folder=None)
         self.config.from_pyfile('config/base_setting.py')
+        env = os.environ.get('ENV')
+        if env:
+            config_file = 'config/{}_setting.py'.format(env)
+            self.config.from_pyfile(config_file, silent=True)
         db.init_app(self)
 
 BASE_DIR = os.getcwd()
