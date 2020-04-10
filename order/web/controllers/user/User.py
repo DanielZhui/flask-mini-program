@@ -1,7 +1,7 @@
 from flask import Blueprint, request, render_template, redirect, jsonify
 
 from common.models.User import User
-from libs.user.UserService import UserService
+from common.libs.user.UserService import UserService
 
 route_user = Blueprint('user_page', __name__)
 
@@ -33,6 +33,16 @@ def login():
         resp['msg'] = '请输入正确的用户名或密码'
         return jsonify(resp)
 
-    # TODO:比较登录用户密码和数据库保存密码(加密后的密码)是否一致
-    
+    # 比较登录用户密码和数据库保存密码(加密后的密码)是否一致
+    salt_pwd = UserService.genePwd(login_pwd, user_info.login_salt)
+    if user_info.login_pwd != salt_pwd:
+        resp['code'] = -1
+        resp['msg'] = '请输入正确的用户名或密码!'
+        return jsonify(resp)
+
+    # 判断用户是否为有效用户
+    if user_info.status != 1:
+        resp['code'] = -1
+        resp['msg'] = '账号已失效,请重试'
+        return jsonify(resp)
     return jsonify(resp)
