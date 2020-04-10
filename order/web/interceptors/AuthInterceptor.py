@@ -5,6 +5,7 @@ from flask import g, request, redirect
 from application import app
 from common.models.User import User
 from common.libs.user.UserService import UserService
+from common.libs.UrlManager import UrlManager
 
 @app.before_request
 def before_request():
@@ -23,7 +24,9 @@ def before_request():
     # 验证 cookie 中当前用户是已经否登录
     user_info = check_login()
     if not user_info:
-        return redirect('/user/login')
+        return redirect(UrlManager.buildUrl('/user/login'))
+    
+    g.current_user = user_info
     return
 
 def check_login():

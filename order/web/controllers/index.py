@@ -1,9 +1,9 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, g
 
 
 route_index = Blueprint('index', __name__)
 
 @route_index.route('/')
 def index():
-    # return 'welcome to order system'
-    return render_template('index/index.html')
+    current_user = g.current_user
+    return render_template('index/index.html', current_user=current_user)
