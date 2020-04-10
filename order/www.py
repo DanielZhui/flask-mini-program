@@ -1,4 +1,13 @@
 from application import app
+
+'''
+拦截器部分
+'''
+from web.interceptors import AuthInterceptor
+
+'''
+服务蓝图部分
+'''
 from web.controllers.index import route_index
 from web.controllers.user.User import route_user
 from web.controllers.static import route_static

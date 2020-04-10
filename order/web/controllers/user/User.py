@@ -12,7 +12,6 @@ def login():
     # 请求 login 页面时
     if request.method == 'GET':
         return render_template('user/login.html')
-
     resp = {'code': 200, 'msg': '登录成功', 'data': {}}
     req = request.values
     login_name = req['login_name'] if 'login_name' in req else ''
@@ -50,6 +49,6 @@ def login():
 
     # 当所有验证通过时设置当前登录用户 cookie 信息(加密)
     response = make_response(json.dumps(resp))
-    # cookie 有效期设置为一天
-    response.set_cookie(app.config['AUTH_COOKIE_NAME'], UserService.geneAuthCode(user_info), 24 * 60 * 60)
+    # cookie 的value: 加密字符串#uid 这样设计的目的是方便后面拦截器获取用户信息, cookie 有效期设置为一天
+    response.set_cookie(app.config['AUTH_COOKIE_NAME'], '{}#{}'.format(UserService.geneAuthCode(user_info), user_info.uid), 24 * 60 * 60)
     return response

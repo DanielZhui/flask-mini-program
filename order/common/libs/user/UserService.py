@@ -7,7 +7,6 @@ class UserService():
     def genePwd(pwd, salt):
         md = hashlib.md5()
         str = '{}-{}'.format(base64.encodebytes(pwd.encode('utf-8')), salt)
-        print(pwd, salt, str)
         md.update(str.encode('utf-8'))
         return md.hexdigest()
 
