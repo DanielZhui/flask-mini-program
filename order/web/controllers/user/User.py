@@ -1,4 +1,6 @@
-from flask import Blueprint, request, render_template, redirect, jsonify
+import json
+from flask import Blueprint, request, render_template, redirect, jsonify, make_response
+from application import app
 
 from common.models.User import User
 from common.libs.user.UserService import UserService
@@ -11,12 +13,12 @@ def login():
     if request.method == 'GET':
         return render_template('user/login.html')
 
-    # 对请求参数进行校验
     resp = {'code': 200, 'msg': '登录成功', 'data': {}}
     req = request.values
     login_name = req['login_name'] if 'login_name' in req else ''
     login_pwd = req['login_pwd'] if 'login_pwd' in req else ''
 
+    # 对请求参数进行校验
     if not login_name or len(login_name) < 1:
         resp['code'] = -1
         resp['msg'] = '请输入正确的用户名'
@@ -45,4 +47,9 @@ def login():
         resp['code'] = -1
         resp['msg'] = '账号已失效,请重试'
         return jsonify(resp)
-    return jsonify(resp)
+
+    # 当所有验证通过时设置当前登录用户 cookie 信息(加密)
+    response = make_response(json.dumps(resp))
+    # cookie 有效期设置为一天
+    response.set_cookie(app.config['AUTH_COOKIE_NAME'], UserService.geneAuthCode(user_info), 24 * 60 * 60)
+    return response
