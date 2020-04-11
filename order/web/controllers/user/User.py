@@ -52,3 +52,10 @@ def login():
     # cookie 的value: 加密字符串#uid 这样设计的目的是方便后面拦截器获取用户信息, cookie 有效期设置为一天
     response.set_cookie(app.config['AUTH_COOKIE_NAME'], '{}#{}'.format(UserService.geneAuthCode(user_info), user_info.uid), 24 * 60 * 60)
     return response
+
+
+@route_user.route('/logout')
+def logout():
+    response = make_response(redirect('/user/login'))
+    response.delete_cookie(app.config['AUTH_COOKIE_NAME'])
+    return response
