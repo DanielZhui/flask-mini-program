@@ -1,6 +1,6 @@
 import json
-from flask import Blueprint, request, redirect, jsonify, make_response
-from application import app
+from flask import Blueprint, request, redirect, jsonify, make_response, g
+from application import app, db
 
 from common.models.User import User
 from common.libs.user.UserService import UserService
@@ -61,9 +61,34 @@ def logout():
     response.delete_cookie(app.config['AUTH_COOKIE_NAME'])
     return response
 
-@route_user.route('/edit')
+@route_user.route('/edit', methods=['GET', 'POST'])
 def edit():
-    pass
+    resp = {'code': 200, 'msg': '修改成功', 'data': {}}
+    request_method = request.method
+    if request_method == 'GET':
+        return ops_render('user/edit.html')
+    if request_method == 'POST':
+        req = request.values
+        nickname = req['nickname'] if 'nickname' in req else ''
+        email = req['email'] if 'email' in req else ''
+
+        if not nickname or len(nickname) < 1:
+            resp['code'] = -1
+            resp['msg'] = '请输入符合规范的姓名'
+            return jsonify(resp)
+
+        if not email or len(email) < 1:
+            resp['code'] = -1
+            resp['msg'] = '请输入符合规范的邮箱'
+            return jsonify(resp)
+
+        user_info = g.current_user
+        user_info.nickname = nickname
+        user_info.email = email
+        # 更新当前用户的用户信息
+        db.session.add(user_info)
+        db.session.commit()
+        return jsonify(resp)
 
 @route_user.route('/resset-pwd')
 def resetPwd():

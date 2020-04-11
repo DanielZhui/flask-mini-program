@@ -3,7 +3,7 @@ from application import db
 class User(db.Model):
     __tablename__ = 'user'
     uid = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    nikename = db.Column(db.String(64), nullable=False)
+    nickname = db.Column(db.String(64), nullable=False)
     mobile = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     # flask 有无类似 django choice 选项
