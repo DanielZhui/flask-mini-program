@@ -1,9 +1,10 @@
 import json
-from flask import Blueprint, request, render_template, redirect, jsonify, make_response
+from flask import Blueprint, request, redirect, jsonify, make_response
 from application import app
 
 from common.models.User import User
 from common.libs.user.UserService import UserService
+from common.libs.Helper import ops_render
 
 route_user = Blueprint('user_page', __name__)
 
@@ -11,7 +12,7 @@ route_user = Blueprint('user_page', __name__)
 def login():
     # 请求 login 页面时
     if request.method == 'GET':
-        return render_template('user/login.html')
+        return ops_render('user/login.html')
     resp = {'code': 200, 'msg': '登录成功', 'data': {}}
     req = request.values
     login_name = req['login_name'] if 'login_name' in req else ''
@@ -59,3 +60,11 @@ def logout():
     response = make_response(redirect('/user/login'))
     response.delete_cookie(app.config['AUTH_COOKIE_NAME'])
     return response
+
+@route_user.route('/edit')
+def edit():
+    pass
+
+@route_user.route('/resset-pwd')
+def resetPwd():
+    pass
