@@ -90,6 +90,11 @@ def edit():
         db.session.commit()
         return jsonify(resp)
 
-@route_user.route('/resset-pwd')
+@route_user.route('/reset-pwd', methods=['GET', 'POST'])
 def resetPwd():
-    pass
+    request_method = request.method
+    if request_method == 'GET':
+        return ops_render('user/reset_pwd.html')
+    if request_method == 'POST':
+        resp = {'code': 200, 'msg': '修改成功', 'data': {}}
+        return jsonify(resp)
