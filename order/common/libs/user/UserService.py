@@ -14,6 +14,8 @@ class UserService():
     def geneAuthCode(user_info):
         login_salt = user_info.login_salt
         login_name = user_info.login_name
+        login_pwd = user_info.login_pwd
         md5 = hashlib.md5(login_salt.encode('utf-8'))
-        md5.update(login_name.encode('utf-8'))
+        str = '{}-{}'.format(login_name, login_pwd)
+        md5.update(str.encode('utf-8'))
         return md5.hexdigest()

@@ -1,31 +1,31 @@
 ;
 var mod_pwd_ops = {
-    init:function(){
+    init:function() {
         this.eventBind();
     },
-    eventBind:function(){
-        $("#save").click(function(){
+    eventBind:function() {
+        $("#save").click(function() {
             var btn_target = $(this);
-            if( btn_target.hasClass("disabled") ){
-                common_ops.alert("正在处理!!请不要重复提交~~");
+            if (btn_target.hasClass("disabled")) {
+                common_ops.alert("正在处理,请勿重复提交");
                 return;
             }
 
             var old_password = $("#old_password").val();
             var new_password = $("#new_password").val();
+            console.log(old_password)
 
-
-            if( !old_password ){
-                common_ops.alert( "请输入原密码~~" );
+            if (!old_password || old_password.length < 2) {
+                common_ops.alert("请输入正确的原密码");
                 return false;
             }
 
-            if( !new_password || new_password.length < 6 ){
-                common_ops.alert( "请输入不少于6位的新密码~~" );
+            if (!new_password || new_password.length < 6) {
+                common_ops.alert("请输入不少于6位数的新密码");
                 return false;
             }
 
-            btn_target.addClass("disabled");
+            btn_target.addClass("enabled");
 
             var data = {
                 old_password: old_password,
@@ -33,27 +33,27 @@ var mod_pwd_ops = {
             };
 
             $.ajax({
-                url:common_ops.buildUrl( "/user/reset-pwd" ),
-                type:'POST',
+                url:common_ops.buildUrl("/user/reset-pwd"),
+                type:"POST",
                 data:data,
-                dataType:'json',
-                success:function( res ){
+                dataType:"json",
+                success:function(res){
                     btn_target.removeClass("disabled");
                     var callback = null;
-                    if( res.code == 200 ){
-                        callback = function(){
+                    if (res.code == 200) {
+                        callback = function() {
                             window.location.href = window.location.href;
                         }
                     }
-                    common_ops.alert( res.msg,callback );
+                    common_ops.alert(res.msg, callback);
                 }
             });
-
-
         });
     }
-};
+}
 
-$(document).ready( function(){
-    mod_pwd_ops.init();
-} );
+$(document).ready(
+    function() {
+        mod_pwd_ops.init();
+    }
+)

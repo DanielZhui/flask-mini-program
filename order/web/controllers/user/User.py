@@ -97,4 +97,40 @@ def resetPwd():
         return ops_render('user/reset_pwd.html')
     if request_method == 'POST':
         resp = {'code': 200, 'msg': '修改成功', 'data': {}}
-        return jsonify(resp)
+        req_data = request.values
+        old_password = req_data['old_password'] if 'old_password' in req_data else ''
+        new_password = req_data['new_password'] if 'new_password' in req_data else ''
+
+        if not old_password or len(old_password) < 6:
+            resp['code'] = -1
+            resp['msg'] = '原始密码长度应不小于6'
+            return jsonify(resp)
+
+        if not new_password or len(new_password) < 6:
+            resp['code'] = -1
+            resp['msg'] = '新密码密码长度应不小于6'
+            return jsonify(resp)
+
+        if old_password == new_password:
+            resp['code'] = -1
+            resp['msg'] = '新旧密码不能完全相同'
+            return jsonify(resp)
+
+        user_info = g.current_user
+        user_salt = user_info.login_salt
+        login_pwd = user_info.login_pwd
+        request_pwd = UserService.genePwd(old_password, user_salt)
+        if request_pwd != login_pwd:
+            resp['code'] = -1
+            resp['msg'] = '你输入的原始密码不正确,请确认后重新输入'
+            return jsonify(resp)
+
+        user_info.login_pwd = UserService.genePwd(new_password, user_salt)
+        db.session.add(user_info)
+        db.session.commit()
+
+        # 设置新cookie
+        response = make_response(json.dumps(resp))
+        response.set_cookie(app.config['AUTH_COOKIE_NAME'], '{}#{}'.format(UserService.geneAuthCode(user_info), user_info.uid), 24 * 60 * 60)
+        
+        return response
