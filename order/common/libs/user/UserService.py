@@ -1,3 +1,4 @@
+import uuid
 import hashlib, base64
 
 class UserService():
@@ -19,3 +20,8 @@ class UserService():
         str = '{}-{}'.format(login_name, login_pwd)
         md5.update(str.encode('utf-8'))
         return md5.hexdigest()
+
+    @staticmethod
+    def get_salt():
+        salt = str(uuid.uuid4())[:8]
+        return salt

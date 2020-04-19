@@ -49,7 +49,7 @@
             <thead>
             <tr>
                 <th>序号</th>
-                <th>姓名</th>
+                <th>昵称</th>
                 <th>手机</th>
                 <th>邮箱</th>
                 <th>操作</th>
@@ -67,7 +67,7 @@
                     <a href="{{ buildUrl('/account/info') }}?id={{item.uid}}">
                         <i class="fa fa-eye fa-lg"></i>
                     </a>
-                    <a class="m-l" href="{{ buildUrl('/account/set') }}">
+                    <a class="m-l" href="{{ buildUrl('/account/set') }}?id={{item.uid}}">
                         <i class="fa fa-edit fa-lg"></i>
                     </a>
 

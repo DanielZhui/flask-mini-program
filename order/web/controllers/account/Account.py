@@ -1,7 +1,9 @@
 from flask import Blueprint, jsonify, request, redirect
 
-from common.libs.Helper import ops_render
+from common.libs.Helper import ops_render, getCurrentDate
 from common.models.User import User
+from common.libs.user.UserService import UserService
+from application import db
 
 route_account = Blueprint('account_page', __name__)
 
@@ -25,14 +27,82 @@ def info():
         resp_data['user'] = user
         return ops_render('/account/info.html', resp_data)
 
+# 新增用户和修改用户资料统一放在这个 set 这个逻辑中实现
 @route_account.route('/set', methods=['GET', 'POST'])
 def set():
-    resp_data= {}
+    # 这里用来区别是添加用户还是修改用户资料
+    default_pwd = '******'
     request_method = request.method
     if request_method == 'GET':
-        return ops_render('/account/set.html')
-    return ops_render('/account/set.html', resp_data)     
+        resp_data= {}
+        req = request.args
+        uid = int(req.get('id', 0))
+        info = None
+        if uid:
+            info = User.query.filter_by(uid=uid).first()
+        resp_data['info'] = info
+        return ops_render('/account/set.html', resp_data)
 
-@route_account.route('/delete')
-def delete():
+    resp_data = {'cade': 200, 'msg': '操作成功', 'data': {}}
+    request_data = request.values
+    uid = request_data['id'] if 'id' in request_data else 0
+    nickname = request_data['nickname'] if 'nickname' in request_data else ''
+    mobile = request_data['mobile'] if 'mobile' in request_data else ''
+    email = request_data['email'] if 'email' in request_data else ''
+    login_name = request_data['login_name'] if 'login_name' in request_data else ''
+    login_pwd = request_data['login_pwd'] if 'login_pwd' in request_data else ''
+
+    if not nickname or len(nickname) < 1:
+        resp_data['code'] = -1
+        resp_data['msg'] = "请输入符合规范的昵称"
+        return jsonify(resp_data)
+
+    if not email or len(email) < 1:
+        resp_data['code'] = -1
+        resp_data['msg'] = "请输入符合规范的邮箱"
+        return jsonify(resp_data)
+
+    if not login_name or len(login_name) < 1:
+        resp_data['code'] = -1
+        resp_data['msg'] = "请输入符合规范的用户名"
+        return jsonify(resp_data)
+
+    if not login_pwd or len(login_pwd) < 1:
+        resp_data['code'] = -1
+        resp_data['msg'] = "请输入符合规范的登录密码"
+        return jsonify(resp_data)
+
+    # 判断新增用户名是否存在
+    has_in = User.query.filter(User.login_name == login_name, User.uid != uid).first()
+    if has_in:
+        resp_data['code'] = -1
+        resp_data['msg'] = '登录名已存在, 请换一个试试'
+        return jsonify(resp_data)
+
+    user_info = User.query.filter_by(uid=uid).first()
+    if user_info:
+        model_user = user_info
+    else:
+        model_user = User()
+        model_user.create_time = getCurrentDate()
+        model_user.login_salt = UserService.get_salt()
+
+    model_user.nickname = nickname
+    model_user.email = email
+    model_user.mobile = mobile
+    # TODO:用户头像以及用户状态
+    model_user.sex = model_user.status =1
+    model_user.avatar = 'www'
+    model_user.login_name = login_name
+    if login_pwd != default_pwd:
+        model_user.login_pwd = UserService.genePwd(login_pwd, model_user.login_salt)
+    
+    model_user.update_time = getCurrentDate()
+    db.session.add(model_user)
+    db.session.commit()
+    return jsonify(resp_data)
+        
+# 删除用户和恢复用户统一放在这个逻辑中去实现
+@route_account.route('/ops')
+def ops():
     pass
