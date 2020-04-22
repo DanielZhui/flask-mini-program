@@ -1,16 +1,33 @@
 from flask import Blueprint, jsonify, request, redirect
 
-from common.libs.Helper import ops_render, getCurrentDate
+from common.libs.Helper import ops_render, getCurrentDate, iPagination
 from common.models.User import User
 from common.libs.user.UserService import UserService
-from application import db
+from application import db, app
 
 route_account = Blueprint('account_page', __name__)
 
 @route_account.route('/index')
 def index():
     resp_data = {}
-    users = User.query.order_by(User.uid.desc()).all()
+    req_data = request.values
+    page = req_data['p'] if 'p' in req_data and req_data['p'] else 1
+    page = int(page)
+    print(page, type(page))
+    query = User.query
+    page_params = {
+        'total': query.count(),
+        'page_size': app.config['PAGE_SIZE'],
+        'page': page,
+        'display': app.config['PAGE_DISPLAY'],
+        'url': request.full_path.replace('&p={}'.format(page), '')
+    }
+    pages = iPagination(page_params)
+    offset = (page - 1) * app.config['PAGE_SIZE']
+    limit = app.config['PAGE_SIZE'] * page
+    print(offset, limit)
+    users = query.order_by(User.uid.desc()).all()[offset: limit]
+    resp_data['pages'] = pages
     resp_data['users'] = users
     return ops_render('/account/index.html', resp_data)
 
