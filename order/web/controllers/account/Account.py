@@ -130,6 +130,35 @@ def set():
     return jsonify(resp_data)
         
 # 删除用户和恢复用户统一放在这个逻辑中去实现
-@route_account.route('/ops')
+@route_account.route('/ops', methods=['POST'])
 def ops():
-    pass
+    resp_data = {'code': 200, 'msg': '操作成功', 'data': {}}
+    req = request.values
+
+    id = req['id'] if 'id' in req else 0
+    act = req['act'] if 'act' in req else ''
+    if not id:
+        resp_data['code'] = -1
+        resp_data['msg'] = '请选择正确的账号'
+        return jsonify(resp_data)
+
+    if act not in ['remove', 'recover']:
+        resp_data['code'] = -1
+        resp_data['msg'] = '操作有误请重试'
+        return jsonify(resp_data)
+
+    user_info = User.query.filter_by(uid=id).first()
+    if not user_info:
+        resp_data['code'] = -1
+        resp_data['msg'] = '该账号不存在'
+        return jsonify(resp_data)
+
+    if act == 'remove':
+        user_info.status = 0
+    else:
+        user_info.status = 1
+    
+    user_info.update_time = getCurrentDate()
+    db.session.add(user_info)
+    db.session.commit()
+    return jsonify(resp_data)
