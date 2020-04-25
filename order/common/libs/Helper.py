@@ -25,7 +25,7 @@ def iPagination(params):
 
     if page <= 1:
         ret['is_next'] = 0
-    # 这里？？？
+    # is_next: 是否显示尾页
     if page >= total_pages:
         ret['is_next'] = 0
 
@@ -33,8 +33,7 @@ def iPagination(params):
 
     if page - display_median > 0:
         ret['from'] = page - display_median
-    
-    if page - display_median < 0:
+    else:    
         ret['from'] = 1
 
     if page + display_median <= total_pages:
