@@ -1,3 +1,4 @@
+from sqlalchemy import or_
 from flask import Blueprint, jsonify, request, redirect
 
 from common.libs.Helper import ops_render, getCurrentDate, iPagination
@@ -13,8 +14,15 @@ def index():
     req_data = request.values
     page = req_data['p'] if 'p' in req_data and req_data['p'] else 1
     page = int(page)
-    print(page, type(page))
     query = User.query
+
+    if 'mix_kw' in req_data and req_data['mix_kw']:
+        rule = or_(User.nickname.ilike('%{}%'.format(req_data['mix_kw'])), User.mobile.ilike('%{}%'.format(req_data['mix_kw'])))
+        query = query.filter(rule)
+
+    if 'status' in req_data and int(req_data['status']) > -1:
+        query = query.filter(User.status == int(req_data['status']))
+
     page_params = {
         'total': query.count(),
         'page_size': app.config['PAGE_SIZE'],
@@ -22,13 +30,15 @@ def index():
         'display': app.config['PAGE_DISPLAY'],
         'url': request.full_path.replace('&p={}'.format(page), '')
     }
+
     pages = iPagination(page_params)
     offset = (page - 1) * app.config['PAGE_SIZE']
     limit = app.config['PAGE_SIZE'] * page
-    print(offset, limit)
     users = query.order_by(User.uid.desc()).all()[offset: limit]
     resp_data['pages'] = pages
     resp_data['users'] = users
+    resp_data['search_con'] = req_data
+    resp_data['status_mapping'] = app.config['STATUS_MAPPING']
     return ops_render('/account/index.html', resp_data)
 
 @route_account.route('/info', methods=['GET', 'POST'])

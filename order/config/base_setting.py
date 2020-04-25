@@ -18,3 +18,8 @@ IGNORE_STATIC_URLS = [
 PAGE_SIZE = 1
 # 分页器展示的页码
 PAGE_DISPLAY = 10
+
+STATUS_MAPPING = {
+    '1': '正常',
+    '2': '已删除'
+}
