@@ -15,7 +15,7 @@ IGNORE_STATIC_URLS = [
 ]
 
 # 每页显示的数量
-PAGE_SIZE = 1
+PAGE_SIZE = 3
 # 分页器展示的页码
 PAGE_DISPLAY = 10
 
