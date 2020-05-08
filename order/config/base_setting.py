@@ -23,3 +23,5 @@ STATUS_MAPPING = {
     '1': '正常',
     '0': '已删除'
 }
+
+RELEASE_VERSION = '1.0.0'
