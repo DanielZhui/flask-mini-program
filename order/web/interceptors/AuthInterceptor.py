@@ -6,6 +6,7 @@ from application import app
 from common.models.User import User
 from common.libs.user.UserService import UserService
 from common.libs.UrlManager import UrlManager
+from common.libs.log.LogService import LogService
 
 @app.before_request
 def before_request():
@@ -27,6 +28,7 @@ def before_request():
         return redirect(UrlManager.buildUrl('/user/login'))
     
     g.current_user = user_info
+    LogService.addAccessLog()
     return
 
 def check_login():

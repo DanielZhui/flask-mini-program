@@ -4,8 +4,9 @@ from flask_script import Server
 
 import www
 from application import app, db, manager
+# 导入模型
 from common.models import User
-
+from common.models.log import AppLog
 
 ## manager cmd
 Migrate(app, db)
