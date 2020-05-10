@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, request, redirect
 
 from common.libs.Helper import ops_render, getCurrentDate, iPagination
 from common.models.User import User
+from common.models.log.AppLog import AppAccessLog
 from common.libs.user.UserService import UserService
 from application import db, app
 
@@ -52,6 +53,9 @@ def info():
             return redirect('/account/index')
         user = User.query.filter_by(uid=uid).first()
         resp_data['user'] = user
+        # 获取当前用户访问记录
+        access_log = AppAccessLog.query.filter_by(uid=uid).order_by(AppAccessLog.id.desc()).limit(10).all()
+        resp_data['access_log'] = access_log
         return ops_render('/account/info.html', resp_data)
 
 # 新增用户和修改用户资料统一放在这个 set 这个逻辑中实现

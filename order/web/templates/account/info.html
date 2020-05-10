@@ -53,11 +53,22 @@
                                         <tr>
                                             <th>访问时间</th>
                                             <th>访问Url</th>
+                                            <th>ip</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-									<tr><td colspan="2">暂无数据</td></tr>
-                                     </tbody>
+                                    {% if access_log %}
+                                        {% for item in access_log %}
+                                            <tr>
+                                                <td>{{item.created_time}}</td>
+                                                <td>{{item.target_url}}</td>
+                                                <td>{{item.ip}}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+									    <tr><td colspan="2">暂无数据</td></tr>
+                                    {% endif %}
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
