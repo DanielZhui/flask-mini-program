@@ -20,3 +20,21 @@ class LogService():
         db.session.add(target)
         db.session.commit()
         return True
+
+    @staticmethod
+    def addErrorLog(content):
+        if 'favicon.ico' in request.url:
+            return
+        target = AppErrorLog()
+        target.target_url = request.url
+        target.referrer_url = request.referrer
+        # target.ip = request.remote_addr
+        target.query_parma = json.dumps(request.values.to_dict())
+        if 'current_user' in g and g.current_user is not None:
+            target.uid = g.current_user.uid
+        target.user_agent = request.headers.get('User-Agent')
+        target.content = content
+        target.created_time = getCurrentDate()
+        db.session.add(target)
+        db.session.commit()
+        return True
