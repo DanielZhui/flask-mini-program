@@ -4,6 +4,7 @@ from application import app
 拦截器部分
 '''
 from web.interceptors import AuthInterceptor
+from web.interceptors import ErrorInterceptor
 
 '''
 服务蓝图部分
